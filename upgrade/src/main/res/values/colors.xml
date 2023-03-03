@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="text_color">#202428</color>
+    <color name="text_hint">#A0A4A8</color>
+
+    <color name="divider">#88C0C4C8</color>
+    <color name="divider_light">#88D3D6D9</color>
+    <color name="gray_9">#999999</color>
+    <color name="gray_light">#D4D8DB</color>
+
+    <color name="title_bar_text">#151515</color>
+    <color name="title_bar_bg">#FFFFFF</color>
+    <color name="title_bar_bottom_line">#EAECEE</color>
+
+    <color name="version_theme">#2288EE</color>
+</resources>
