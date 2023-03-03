@@ -1,5 +1,6 @@
 package com.jz.upgrade
 
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -24,7 +25,6 @@ class UpgradeManager {
          * 初始化模块
          * */
         fun init(context: Context, managerOption: UpgradeManagerOption? = null): Companion {
-            contextReference = WeakReference(context)
 
             this.option.host = managerOption?.host ?: DEFAULT_HOST
             LogUtil.printLog = managerOption?.printLog ?: false
@@ -62,6 +62,11 @@ class UpgradeManager {
             this.option = option
         }
 
+        fun setPrintLog(printLog: Boolean) {
+            this.option.printLog = printLog
+        }
+
+
         /**
          * 手动检查更新
          * @param doOnSuccess 请求成功
@@ -98,7 +103,8 @@ class UpgradeManager {
         /**
          *
          * */
-        fun optionBuilder(): UpgradeOptionBuilder {
+        fun optionBuilder(context: Context): UpgradeOptionBuilder {
+            contextReference = WeakReference(context)
             return UpgradeOptionBuilder(contextReference?.get(), option)
         }
     }
@@ -111,11 +117,11 @@ class UpgradeManager {
         /**
          * 检查更新，自动处理异常情况
          *
-            fun checkUpgrade(doOnNoNewVersion: (() -> Unit)?) {
-                checkUpgrade({
+        fun checkUpgrade(doOnNoNewVersion: (() -> Unit)?) {
+        checkUpgrade({
 
-                }, doOnNoNewVersion)
-            }
+        }, doOnNoNewVersion)
+        }
          */
 
 
@@ -133,17 +139,41 @@ class UpgradeManager {
             checkUpgrade({
                 Handler(context!!.mainLooper).post {
                     val versionList = it.data
-                    if (versionList.isNotEmpty()) {
-                        if (context != null) {
-                            optionBuilder.doOnError = doOnError
-                            val upgradeDialog =
-                                UpgradeDialog(context!!, versionList, optionBuilder)
-                            upgradeDialog.show()
+                    if (versionList.isEmpty()) {
+                        doOnNoNewVersion?.invoke()
+                        return@post
+                    }
+                    var errorType = 2004
+                    val contextAvailable = if (context != null) {
+                        if (context is Activity) {
+                            val activity = context as Activity
+                            val active = !activity.isDestroyed
+                            active
                         } else {
-                            doOnError?.invoke(CustomException.nullContextException)
+                            errorType = 2003
+                            false
                         }
                     } else {
-                        doOnNoNewVersion?.invoke()
+                        errorType = 2004
+                        false
+                    }
+                    if (contextAvailable) {
+                        optionBuilder.doOnError = doOnError
+                        val upgradeDialog =
+                            UpgradeDialog(context!!, versionList, optionBuilder)
+                        upgradeDialog.show()
+                    } else {
+                        when (errorType) {
+                            2002 -> {
+                                doOnError?.invoke(CustomException.nullContextException)
+                            }
+                            2003 -> {
+                                doOnError?.invoke(CustomException.appContextException)
+                            }
+                            2004 -> {
+                                doOnError?.invoke(CustomException.activityDestroyException)
+                            }
+                        }
                     }
                 }
             }, doOnError)

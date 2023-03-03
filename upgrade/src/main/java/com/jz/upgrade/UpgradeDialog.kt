@@ -17,7 +17,7 @@ class UpgradeDialog(
     context: Context,
     private var versionList: List<AppVersion>,
     private var option: UpgradeManager.UpgradeOptionBuilder
-) : Dialog(context) {
+) : Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Light_NoActionBar) {
     private val TAG = "UpgradeDialog"
     private lateinit var mBinding: DialogNewVersionBinding
     private var apkPath: String? = null

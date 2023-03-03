@@ -18,7 +18,9 @@ class CustomException(var code: Int, var msg: String, var throwable: Throwable?)
     companion object {
 
         val notInitException = CustomException(2001, "模块未初始化！", null)
-        val nullContextException = CustomException(2002, "context为空！", null)
+        val nullContextException = CustomException(2002, "Context为空！", null)
+        val appContextException = CustomException(2003, "context必须为Activity！", null)
+        val activityDestroyException = CustomException(2004, "Activity已销毁！", null)
 
         fun interfaceException(interfaceCode: Int, msg: String): CustomException {
             return CustomException(3000, msg, null, interfaceCode)
