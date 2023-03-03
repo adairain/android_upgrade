@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.view.LayoutInflater
 import com.jz.upgrade.databinding.DialogNewVersionBinding
 
 /**
@@ -23,7 +24,7 @@ class UpgradeDialog(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = DialogNewVersionBinding.inflate(layoutInflater)
+        mBinding = DialogNewVersionBinding.inflate(LayoutInflater.from(context))
         setContentView(mBinding.root)
         initView()
     }
