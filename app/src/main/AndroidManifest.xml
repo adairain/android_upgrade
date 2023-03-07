@@ -34,7 +34,7 @@
 
         <meta-data
             android:name="upgrade_key"
-            android:value="13f425d014bac1d765ab7b9bc0002d0f" />
+            android:value="d7e986e2a274284b5b3497d7fa3a19f0" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

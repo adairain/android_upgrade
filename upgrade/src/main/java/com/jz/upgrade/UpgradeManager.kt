@@ -50,20 +50,24 @@ class UpgradeManager {
          * 设置接口主机地址
          * @param host 主机
          * */
-        fun setHost(host: String) {
+        fun setHost(host: String): Companion {
             this.option.host = host
+            return this
         }
 
-        fun setAppKey(appKey: String) {
+        fun setAppKey(appKey: String): Companion {
             this.option.appKey = appKey
+            return this
         }
 
-        fun setOption(option: UpgradeManagerOption) {
+        fun setOption(option: UpgradeManagerOption): Companion {
             this.option = option
+            return this
         }
 
-        fun setPrintLog(printLog: Boolean) {
+        fun setPrintLog(printLog: Boolean): Companion {
             this.option.printLog = printLog
+            return this
         }
 
 
