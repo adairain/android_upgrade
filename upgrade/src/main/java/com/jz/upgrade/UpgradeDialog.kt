@@ -71,7 +71,7 @@ class UpgradeDialog(
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val newestVersion = versionList.first()
         mBinding.tvCancel.setOnClickListener {
-            option.doOnCancelUpgrade?.invoke(newestVersion.forceUpgrade)
+            option.doOnCancelUpgrade?.invoke(newestVersion.forceUpgrade, this)
         }
         if (newestVersion.forceUpgrade) {
             setCancelable(false)

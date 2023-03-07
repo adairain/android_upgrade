@@ -1,6 +1,7 @@
 package com.jz.upgrade
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -192,7 +193,7 @@ class UpgradeManager {
         internal var showHistoryVersion = false
         internal var allowDownloadHistoryVersion = false
         internal var downloadHost = DEFAULT_DOWNLOAD_HOST
-        internal var doOnCancelUpgrade: ((isForce: Boolean) -> Unit)? = null
+        internal var doOnCancelUpgrade: ((isForce: Boolean,dialog:Dialog) -> Unit)? = null
         internal var doOnDownloadProgressUpdate: ((progress: Int) -> Unit)? = null
         internal var doOnDownloadFinish: ((path: String) -> Unit)? = null
         internal var doOnError: ((e: CustomException) -> Unit)? = null
@@ -237,7 +238,7 @@ class UpgradeManager {
         /**
          * 取消更新后的操作
          * */
-        fun doOnCancelUpgrade(doOnCancelUpgrade: ((isForce: Boolean) -> Unit)): UpgradeOptionBuilder {
+        fun doOnCancelUpgrade(doOnCancelUpgrade: ((isForce: Boolean,dialog:Dialog) -> Unit)): UpgradeOptionBuilder {
             this.doOnCancelUpgrade = doOnCancelUpgrade
             return this
         }
