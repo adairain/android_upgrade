@@ -6,8 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
-import android.view.LayoutInflater
-import com.jz.upgrade.databinding.DialogNewVersionBinding
+import com.jz.upgrade.databinding.DialogVersionUpgradeBinding
 
 /**
  * @author zhouyu
@@ -19,12 +18,12 @@ class UpgradeDialog(
     private var option: UpgradeManager.UpgradeOptionBuilder
 ) : Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Dialog) {
     private val TAG = "UpgradeDialog"
-    private lateinit var mBinding: DialogNewVersionBinding
+    private lateinit var mBinding: DialogVersionUpgradeBinding
     private var apkPath: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = DialogNewVersionBinding.inflate(layoutInflater)
+        mBinding = DialogVersionUpgradeBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
         initView()
     }
