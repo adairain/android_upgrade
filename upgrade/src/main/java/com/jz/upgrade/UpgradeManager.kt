@@ -87,7 +87,7 @@ class UpgradeManager {
             }
 
 
-            val url = "http://${option.host}/app/checkUpgrade"
+            val url = "http://${option.host}/distribute/app/checkUpgrade"
 
             val params = mutableMapOf<String, Any>()
             params["appKey"] = option.appKey!!
