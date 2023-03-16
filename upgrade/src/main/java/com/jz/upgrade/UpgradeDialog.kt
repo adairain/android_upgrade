@@ -1,5 +1,6 @@
 package com.jz.upgrade
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
@@ -34,7 +35,7 @@ class UpgradeDialog(
 
     private fun download(newestVersion: AppVersion) {
         ApkUtils.clearCacheApks(context)
-        val url = "http://${option.downloadHost}/app/down?fileId=${newestVersion.fileId}"
+        val url = "http://${option.downloadHost}/distribute/app/down?fileId=${newestVersion.fileId}"
         LogUtil.e(TAG, "initView:$url")
         mBinding.tvUpdate.isEnabled = false
         OkHttpUtil.downloadFile(
@@ -71,7 +72,20 @@ class UpgradeDialog(
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val newestVersion = versionList.first()
         mBinding.tvCancel.setOnClickListener {
-            option.doOnCancelUpgrade?.invoke(newestVersion.forceUpgrade, this)
+            if (option.doOnCancelUpgrade != null) {
+                option.doOnCancelUpgrade?.invoke(newestVersion.forceUpgrade, this)
+            } else {
+                if (context is Activity) {
+                    val activity = context as Activity
+                    val active = !activity.isDestroyed
+                    if (active) {
+                        dismiss()
+                    }
+                    if (active && newestVersion.forceUpgrade) {
+                        activity.finish()
+                    }
+                }
+            }
         }
         if (newestVersion.forceUpgrade) {
             setCancelable(false)
