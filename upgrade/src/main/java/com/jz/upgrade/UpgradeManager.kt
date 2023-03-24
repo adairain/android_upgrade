@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Handler
 import com.google.gson.reflect.TypeToken
 import java.lang.ref.WeakReference
 import java.lang.reflect.Type
@@ -28,6 +27,7 @@ class UpgradeManager {
         fun init(context: Context, managerOption: UpgradeManagerOption? = null): Companion {
 
             this.option.host = managerOption?.host ?: DEFAULT_HOST
+            this.option.downloadHost = managerOption?.downloadHost ?: DEFAULT_DOWNLOAD_HOST
             LogUtil.printLog = managerOption?.printLog ?: false
 
             val manager = context.packageManager
@@ -93,13 +93,15 @@ class UpgradeManager {
             params["appKey"] = option.appKey!!
             params["versionCode"] = versionCode
             LogUtil.i(TAG, url)
-            OkHttpUtil.postJson(url, OkHttpUtil.toJson(params), {
+
+            OkHttpUtil.postJson(contextReference?.get(), url, OkHttpUtil.toJson(params), {
                 val bean = OkHttpUtil.fromJson<BaseBean<List<AppVersion>>>(it, type)
                 if (bean.isSuccess()) {
                     doOnSuccess.invoke(bean)
                 } else {
                     doOnError?.invoke(CustomException.interfaceException(bean.code, bean.msg))
                 }
+
             }, {
                 doOnError?.invoke(it)
             })
@@ -142,42 +144,40 @@ class UpgradeManager {
                 return
             }
             checkUpgrade({
-                Handler(context!!.mainLooper).post {
-                    val versionList = it.data
-                    if (versionList.isEmpty()) {
-                        doOnNoNewVersion?.invoke()
-                        return@post
-                    }
-                    var errorType = 2004
-                    val contextAvailable = if (context != null) {
-                        if (context is Activity) {
-                            val activity = context as Activity
-                            val active = !activity.isDestroyed
-                            active
-                        } else {
-                            errorType = 2003
-                            false
-                        }
+                val versionList = it.data
+                if (versionList.isEmpty()) {
+                    doOnNoNewVersion?.invoke()
+                    return@checkUpgrade
+                }
+                var errorType = 2004
+                val contextAvailable = if (context != null) {
+                    if (context is Activity) {
+                        val activity = context as Activity
+                        val active = !activity.isDestroyed
+                        active
                     } else {
-                        errorType = 2004
+                        errorType = 2003
                         false
                     }
-                    if (contextAvailable) {
-                        optionBuilder.doOnError = doOnError
-                        val upgradeDialog =
-                            UpgradeDialog(context!!, versionList, optionBuilder)
-                        upgradeDialog.show()
-                    } else {
-                        when (errorType) {
-                            2002 -> {
-                                doOnError?.invoke(CustomException.nullContextException)
-                            }
-                            2003 -> {
-                                doOnError?.invoke(CustomException.appContextException)
-                            }
-                            2004 -> {
-                                doOnError?.invoke(CustomException.activityDestroyException)
-                            }
+                } else {
+                    errorType = 2004
+                    false
+                }
+                if (contextAvailable) {
+                    optionBuilder.doOnError = doOnError
+                    val upgradeDialog =
+                        UpgradeDialog(context!!, versionList, optionBuilder)
+                    upgradeDialog.show()
+                } else {
+                    when (errorType) {
+                        2002 -> {
+                            doOnError?.invoke(CustomException.nullContextException)
+                        }
+                        2003 -> {
+                            doOnError?.invoke(CustomException.appContextException)
+                        }
+                        2004 -> {
+                            doOnError?.invoke(CustomException.activityDestroyException)
                         }
                     }
                 }
@@ -193,7 +193,7 @@ class UpgradeManager {
         internal var showHistoryVersion = false
         internal var allowDownloadHistoryVersion = false
         internal var downloadHost = DEFAULT_DOWNLOAD_HOST
-        internal var doOnCancelUpgrade: ((isForce: Boolean,dialog:Dialog) -> Unit)? = null
+        internal var doOnCancelUpgrade: ((isForce: Boolean, dialog: Dialog) -> Unit)? = null
         internal var doOnDownloadProgressUpdate: ((progress: Int) -> Unit)? = null
         internal var doOnDownloadFinish: ((path: String) -> Unit)? = null
         internal var doOnError: ((e: CustomException) -> Unit)? = null
@@ -238,7 +238,7 @@ class UpgradeManager {
         /**
          * 取消更新后的操作
          * */
-        fun doOnCancelUpgrade(doOnCancelUpgrade: ((isForce: Boolean,dialog:Dialog) -> Unit)): UpgradeOptionBuilder {
+        fun doOnCancelUpgrade(doOnCancelUpgrade: ((isForce: Boolean, dialog: Dialog) -> Unit)): UpgradeOptionBuilder {
             this.doOnCancelUpgrade = doOnCancelUpgrade
             return this
         }

@@ -1,7 +1,9 @@
 package com.jz.upgrade
 
+import android.content.Context
 import android.net.InetAddresses
 import android.os.Build
+import android.os.Handler
 import android.util.Log
 import android.util.Patterns
 import com.google.gson.Gson
@@ -44,6 +46,7 @@ class OkHttpUtil {
         private val gson = Gson()
         private var client = OkHttpClient()
         fun postJson(
+            context: Context?,
             api: String,
             json: String,
             doOnSuccess: ((data: String) -> Unit)?,
@@ -58,8 +61,13 @@ class OkHttpUtil {
             val call = client.newCall(request)
             call.enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    e.printStackTrace()
-                    doOnError?.invoke(CustomException.netException(e))
+                    if (context != null) {
+                        Handler(context.mainLooper).post {
+                            doOnError?.invoke(CustomException.netException(e))
+                        }
+                    } else {
+                        doOnError?.invoke(CustomException.netException(e))
+                    }
                 }
 
                 override fun onResponse(call: Call, response: Response) {
@@ -68,7 +76,13 @@ class OkHttpUtil {
                     if (code == 200) {
                         if (body?.isNotBlank() == true) {
                             LogUtil.d(TAG, "onResponse: $body")
-                            doOnSuccess?.invoke(body)
+                            if (context != null) {
+                                Handler(context.mainLooper).post {
+                                    doOnSuccess?.invoke(body)
+                                }
+                            } else {
+                                doOnSuccess?.invoke(body)
+                            }
                         }
                     } else {
                         doOnError?.invoke(CustomException.httpCodeErrorException(code))

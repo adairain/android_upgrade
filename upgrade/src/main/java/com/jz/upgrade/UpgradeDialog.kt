@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import com.jz.upgrade.databinding.DialogVersionUpgradeBinding
 
 /**
@@ -14,17 +15,20 @@ import com.jz.upgrade.databinding.DialogVersionUpgradeBinding
  * @date   2023/2/28 16:37
  */
 class UpgradeDialog(
-    context: Context,
+    var mContext: Context,
     private var versionList: List<AppVersion>,
     private var option: UpgradeManager.UpgradeOptionBuilder
-) : Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Dialog) {
+) : Dialog(mContext, androidx.appcompat.R.style.Theme_AppCompat_Dialog) {
     private val TAG = "UpgradeDialog"
     private lateinit var mBinding: DialogVersionUpgradeBinding
     private var apkPath: String? = null
 
+    private var mainHandler:Handler? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = DialogVersionUpgradeBinding.inflate(layoutInflater)
+        mainHandler = Handler(context.mainLooper)
         setContentView(mBinding.root)
         initView()
     }
@@ -42,7 +46,7 @@ class UpgradeDialog(
             url,
             ApkUtils.getDownloadPath(context),
             ApkUtils.createApkFileName(newestVersion), {
-                Handler(context.mainLooper).post {
+                mainHandler?.post {
                     apkPath = it
                     LogUtil.d(TAG, "initView: 下载完成$it")
                     mBinding.tvUpdate.isEnabled = true
@@ -52,13 +56,13 @@ class UpgradeDialog(
                     ApkUtils.installApk(context, it)
                 }
             }, {
-                Handler(context.mainLooper).post {
+                mainHandler?.post {
                     mBinding.tvUpdate.text = "正在下载".plus("（$it%）")
                     option.doOnDownloadProgressUpdate?.invoke(it)
                     LogUtil.d(TAG, "initView: 下载进度$it")
                 }
             }, {
-                Handler(context.mainLooper).post {
+                mainHandler?.post {
                     mBinding.tvUpdate.isEnabled = true
                     mBinding.tvUpdate.text = "重新下载"
                     option.doOnError?.invoke(it)
@@ -75,8 +79,9 @@ class UpgradeDialog(
             if (option.doOnCancelUpgrade != null) {
                 option.doOnCancelUpgrade?.invoke(newestVersion.forceUpgrade, this)
             } else {
-                if (context is Activity) {
-                    val activity = context as Activity
+                Log.e(TAG, "initView: $context", )
+                if (mContext is Activity) {
+                    val activity = mContext as Activity
                     val active = !activity.isDestroyed
                     if (active) {
                         dismiss()
