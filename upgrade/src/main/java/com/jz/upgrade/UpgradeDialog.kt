@@ -74,6 +74,15 @@ class UpgradeDialog(
 
     private fun initView() {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        mBinding.dnvRvVersions.post {
+            val height = context.resources.displayMetrics.heightPixels
+
+
+            val layoutParams = mBinding.dnvRvVersions.layoutParams
+            layoutParams.height = height / 10 * 4
+            mBinding.dnvRvVersions.layoutParams = layoutParams
+        }
+
         val newestVersion = versionList.first()
         mBinding.tvCancel.setOnClickListener {
             if (option.doOnCancelUpgrade != null) {

@@ -15,6 +15,7 @@ class UpgradeManager {
         const val TAG: String = "OkHttpUtil"
         private var option: UpgradeManagerOption = UpgradeManagerOption()
         private var versionCode = 0L
+        private var versionName = ""
         private val type: Type = object : TypeToken<BaseBean<List<AppVersion>>>() {}.type
         private var contextReference: WeakReference<Context>? = null
 
@@ -44,6 +45,7 @@ class UpgradeManager {
             } else {
                 packageInfo.versionCode.toLong()
             }
+            versionName = packageInfo.versionName;
             return this
         }
 
@@ -92,6 +94,8 @@ class UpgradeManager {
             val params = mutableMapOf<String, Any>()
             params["appKey"] = option.appKey!!
             params["versionCode"] = versionCode
+            params["versionName"] = versionName
+            params["platform"] = "android"
             LogUtil.i(TAG, url)
 
             OkHttpUtil.postJson(contextReference?.get(), url, OkHttpUtil.toJson(params), {
