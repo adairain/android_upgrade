@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title">Version Update</string>
+    <string name="updateNow">Update Now</string>
+    <string name="later">Later</string>
+    <string name="update">Update</string>
+</resources>

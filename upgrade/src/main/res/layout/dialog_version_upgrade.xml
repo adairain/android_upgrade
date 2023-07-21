@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
-            android:text="发现新版本"
+            android:text="@string/title"
             android:textColor="@color/white"
             android:textSize="20sp" />
 
@@ -35,7 +35,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/dnv_rv_versions"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -97,7 +97,7 @@
                 android:background="@drawable/ripple_shape_theme_r4"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="立即升级"
+                android:text="@string/updateNow"
                 android:textColor="@color/white"
                 android:textSize="14sp" />
 
@@ -108,7 +108,7 @@
                 android:background="?selectableItemBackground"
                 android:paddingHorizontal="24dp"
                 android:paddingVertical="10dp"
-                android:text="下次再说"
+                android:text="@string/later"
                 android:textColor="@color/text_hint"
                 android:textSize="12sp" />
 

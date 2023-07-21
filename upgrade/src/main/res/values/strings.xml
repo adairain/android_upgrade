@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title">发现新版本</string>
+    <string name="updateNow">立即升级</string>
+    <string name="later">下次再说</string>
+    <string name="update">更新</string>
+</resources>

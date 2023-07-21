@@ -23,7 +23,7 @@ class UpgradeDialog(
     private lateinit var mBinding: DialogVersionUpgradeBinding
     private var apkPath: String? = null
 
-    private var mainHandler:Handler? = null
+    private var mainHandler: Handler? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,8 +76,6 @@ class UpgradeDialog(
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         mBinding.dnvRvVersions.post {
             val height = context.resources.displayMetrics.heightPixels
-
-
             val layoutParams = mBinding.dnvRvVersions.layoutParams
             layoutParams.height = height / 10 * 4
             mBinding.dnvRvVersions.layoutParams = layoutParams
@@ -88,7 +86,7 @@ class UpgradeDialog(
             if (option.doOnCancelUpgrade != null) {
                 option.doOnCancelUpgrade?.invoke(newestVersion.forceUpgrade, this)
             } else {
-                Log.e(TAG, "initView: $context", )
+                Log.e(TAG, "initView: $context")
                 if (mContext is Activity) {
                     val activity = mContext as Activity
                     val active = !activity.isDestroyed
