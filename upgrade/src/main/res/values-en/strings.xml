@@ -4,4 +4,8 @@
     <string name="updateNow">Update Now</string>
     <string name="later">Later</string>
     <string name="update">Update</string>
+    <string name="downloading">downloading</string>
+    <string name="reDownload">Re-Download</string>
+    <string name="downloadCompleted">Download Completed</string>
+    <string name="necessaryUpdate">(Necessary Updates)</string>
 </resources>

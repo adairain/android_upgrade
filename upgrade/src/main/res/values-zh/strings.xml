@@ -4,4 +4,8 @@
     <string name="updateNow">立即升级</string>
     <string name="later">下次再说</string>
     <string name="update">更新</string>
+    <string name="downloading">正在下载</string>
+    <string name="reDownload">重新下载</string>
+    <string name="downloadCompleted">下载完成</string>
+    <string name="necessaryUpdate">（必要更新）</string>
 </resources>

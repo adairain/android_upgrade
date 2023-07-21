@@ -24,7 +24,7 @@ class UpgradeDialog(
     private var apkPath: String? = null
 
     private var mainHandler: Handler? = null
-
+    private var downloadCompleted = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = DialogVersionUpgradeBinding.inflate(layoutInflater)
@@ -39,6 +39,7 @@ class UpgradeDialog(
 
     private fun download(newestVersion: AppVersion) {
         ApkUtils.clearCacheApks(context)
+        downloadCompleted = false
         val url = "http://${option.downloadHost}/distribute/app/down?fileId=${newestVersion.fileId}"
         LogUtil.e(TAG, "initView:$url")
         mBinding.tvUpdate.isEnabled = false
@@ -49,22 +50,24 @@ class UpgradeDialog(
                 mainHandler?.post {
                     apkPath = it
                     LogUtil.d(TAG, "initView: 下载完成$it")
+                    downloadCompleted = true
                     mBinding.tvUpdate.isEnabled = true
-                    mBinding.tvUpdate.text = "下载完成"
+                    mBinding.tvUpdate.text = context.getString(R.string.downloadCompleted)
                     option.doOnDownloadFinish?.invoke(it)
                     (mBinding.dnvRvVersions.adapter as VersionAdapter).allowDownload = true
                     ApkUtils.installApk(context, it)
                 }
             }, {
                 mainHandler?.post {
-                    mBinding.tvUpdate.text = "正在下载".plus("（$it%）")
+                    mBinding.tvUpdate.text = context.getString(R.string.downloading).plus("（$it%）")
                     option.doOnDownloadProgressUpdate?.invoke(it)
                     LogUtil.d(TAG, "initView: 下载进度$it")
                 }
             }, {
                 mainHandler?.post {
+                    downloadCompleted = false
                     mBinding.tvUpdate.isEnabled = true
-                    mBinding.tvUpdate.text = "重新下载"
+                    mBinding.tvUpdate.text = context.getString(R.string.reDownload)
                     option.doOnError?.invoke(it)
                     (mBinding.dnvRvVersions.adapter as VersionAdapter).allowDownload = true
                     LogUtil.e(TAG, "initView: 下载失败${it.msg}")
@@ -102,18 +105,15 @@ class UpgradeDialog(
         if (newestVersion.forceUpgrade) {
             setCancelable(false)
             setCanceledOnTouchOutside(false)
-            mBinding.tvUpdate.append("（必要更新）")
+            mBinding.tvUpdate.append(context.getString(R.string.necessaryUpdate))
         }
         mBinding.tvUpdate.setOnClickListener {
-            when (mBinding.tvUpdate.text.toString()) {
-                "下载完成" -> {
-                    apkPath.let {
-                        ApkUtils.installApk(context, apkPath!!)
-                    }
+            if (downloadCompleted) {
+                apkPath.let {
+                    ApkUtils.installApk(context, apkPath!!)
                 }
-                else -> {
-                    download(newestVersion)
-                }
+            } else {
+                download(newestVersion)
             }
         }
 
